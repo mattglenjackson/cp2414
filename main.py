@@ -24,14 +24,39 @@ def main():
 
 
 def generate_password():
-    # define possible characters to use in the password
-    chars = string.ascii_letters + string.digits + string.punctuation
+    # Define the length of the password
+    min_length = 8
+    max_length = 20
 
-    # generate random password length between 8 and 20 characters
-    password_length = random.randint(8, 20)
+    # Define the types of characters to use in the password
+    uppercase_letters = string.ascii_uppercase
+    lowercase_letters = string.ascii_lowercase
+    symbols = string.punctuation
+    numbers = string.digits
 
-    # generate password using random characters
-    password = ''.join(random.choice(chars) for _ in range(password_length))
+    # Generate a list of characters to use in the password
+    all_characters = (
+            list(uppercase_letters) +
+            list(lowercase_letters) +
+            list(symbols) +
+            list(numbers)
+    )
+
+    # Make sure there is at least one character from each category in the password
+    password = (
+            random.choice(uppercase_letters) +
+            random.choice(lowercase_letters) +
+            random.choice(symbols) +
+            random.choice(numbers)
+    )
+
+    # Add additional random characters to the password
+    password += ''.join(random.choice(all_characters) for _ in range(random.randint(min_length - 4, max_length - 4)))
+
+    # Shuffle the characters in the password to make it more random
+    password_list = list(password)
+    random.shuffle(password_list)
+    password = ''.join(password_list)
 
     return password
 
