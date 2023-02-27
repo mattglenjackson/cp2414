@@ -5,36 +5,19 @@ import re
 
 
 def main():
-    output = int(input("To generate a password press 1, or to type a password press 2: "))
-    if output == 1:
+    print("To generate a password press 1\nTo type a password press 2 \nTo Quit press Q")
+    choice = int(input('>>> '))
+    if choice == 1:
         password = generate_password()
         print(password)
-    elif output == 2:
+
+    elif choice == 2:
         password = str(input("Enter password: "))
-        length, has_uppercase, has_lowercase, has_number, has_symbol = check_string(password)
-        if 8 <= length <= 20:
-            print("Length is fine")
-        else:
-            password = str(input("Enter password with 8-20 characters: "))
-        if (has_uppercase, has_lowercase, has_number, has_symbol) == True:
-            print(f"String length: {length}")
-            print(f"Contains uppercase: {has_uppercase}")
-            print(f"Contains lowercase: {has_lowercase}")
-            print(f"Contains number: {has_number}")
-            print(f"Contains symbol: {has_symbol}")
-        else:
-            # while (has_uppercase, has_lowercase, has_number, has_symbol) == False:
-            password = str(input("Enter password uppercase, lowercase number and symbols: "))
+        while not is_valid_password(password):
+            password = str(input("Enter password: "))
 
     else:
         print("Invalid input")
-
-    length, has_uppercase, has_lowercase, has_number, has_symbol = check_string(password)
-    print(f"String length: {length}")
-    print(f"Contains uppercase: {has_uppercase}")
-    print(f"Contains lowercase: {has_lowercase}")
-    print(f"Contains number: {has_number}")
-    print(f"Contains symbol: {has_symbol}")
 
     hash_value = hash_value_generator(password)
     print("Hash value:", hash_value)
@@ -53,14 +36,28 @@ def generate_password():
     return password
 
 
-def check_string(password):
-    length = len(password)
-    has_uppercase = bool(re.search(r'[A-Z]', password))
-    has_lowercase = bool(re.search(r'[a-z]', password))
-    has_number = bool(re.search(r'\d', password))
-    has_symbol = bool(re.search(r'[!@#$%^&*(),.?":{}|<>]', password))
-
-    return length, has_uppercase, has_lowercase, has_number, has_symbol
+def is_valid_password(password):
+    # Check length
+    if len(password) < 8 and len(password) <= 20:
+        print("password length must be between 8 and 20 characters long")
+        return False
+    # Check uppercase
+    if not re.search(r'[A-Z]', password):
+        print("password must contain uppercase characters")
+        return False
+    # Check lowercase
+    if not re.search(r'[a-z]', password):
+        print("password must contain lowercase characters")
+        return False
+    # Check digit
+    if not re.search(r'\d', password):
+        print("password must contain at least one digit")
+        return False
+    # Check symbol
+    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+        print("password must contain at least one symbol '!@#$%^&*(),.?' etc")
+        return False
+    return True
 
 
 def hash_value_generator(password):
