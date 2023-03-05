@@ -85,17 +85,20 @@ def is_valid_password(password):
     return True
 
 
-def hash_value_generator(password):
-    # number = random.randint(1, 100000000000000)
+# def hash_value_generator(password):
+#     # number = random.randint(1, 100000000000000)
+#
+#     salt = "123"
+#     hash_password = password + salt
+#     # password = "James12matt@"
+#
+#     hash_value = hashlib.md5(password.encode()).hexdigest()
+#
+#     final_hash = hash_value
+#     return final_hash
 
-    salt = "123"
-    hash_password = password + salt
-    # password = "James12matt@"
 
-    hash_value = hashlib.md5(password.encode()).hexdigest()
-
-    final_hash = hash_value
-    return final_hash
+def ceasar_cipher():
 
 
 main()
