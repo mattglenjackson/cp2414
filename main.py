@@ -5,24 +5,36 @@ import re
 
 
 def main():
-    print("To generate a password press 1\nTo type a password press 2 \nTo Quit press Q")
-    choice = int(input('>>> '))
-    if choice == 1:
-        password = generate_password()
-        print(password)
+    choice = menu()
+    while choice != "Q":
+        # if choice == 1:
+        #     password = generate_password()
+        #     print(password)
 
-    elif choice == 2:
-        password = str(input("Enter password: "))
-        while not is_valid_password(password):
+        if choice == 1:
             password = str(input("Enter password: "))
+            while not is_valid_password(password):
+                password = str(input("Enter password: "))
+            menu()
 
-    else:
-        print("Invalid input")
+        elif choice == 2:
+            password = str(input("Enter the password to verify"))
+            verify_password(password)
+            menu()
+
+        else:
+            print("Invalid input")
+            menu()
 
     hash_value = hash_value_generator(password)
     with open('hashed_password.txt', 'w') as f:
         f.write(hash_value)
-    print("Hash value:", hash_value)
+
+
+def menu():
+    print("To type a password press 1 \nTo verify password press 2")
+    choice = int(input('>>> '))
+    return choice
 
 
 def generate_password():
@@ -59,7 +71,6 @@ def generate_password():
     password_list = list(password)
     random.shuffle(password_list)
     password = ''.join(password_list)
-
     return password
 
 
@@ -98,8 +109,21 @@ def hash_value_generator(password):
 
     hash_value = hashlib.md5(hash_password.encode()).hexdigest()
 
-    final_hash = hash_value
-    return final_hash
+    print("Hash value:", hash_value)
+    return hash_value
+
+
+def verify_password(password):
+    with open('salt.txt', 'r') as f:
+        salt = f.read()
+    password = password + salt
+    hash_value = hashlib.md5(password.encode()).hexdigest()
+    with open('hashed_password.txt', 'r') as f:
+        hash_password = f.read()
+    if hash_password == hash_value:
+        print("Congrats, correct password")
+    else:
+        print("Incorrect password")
 
 
 main()
