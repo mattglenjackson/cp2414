@@ -12,26 +12,43 @@ def main():
         #     print(password)
 
         if choice == "1":
+            username = str(input("Enter Username: "))
             password = str(input("Enter password: "))
-            is_valid_password(password)
+            while not is_valid_password(password):
+                password = str(input("Enter password: "))
             hash_value = hash_value_generator(password)
             with open('hashed_password.txt', 'w') as f:
                 f.write(hash_value)
-
+            with open('username.txt', 'w') as f:
+                f.write(username)
 
         elif choice == "2":
+            username = str(input("Enter Username: "))
+            while not verify_user(username):
+                username = str(input("Enter Username: "))
             password = str(input("Enter the password to verify: "))
-            verify_password(password)
+            while not verify_password(password):
+                password = str(input("Enter the password to verify: "))
 
         else:
             print("Invalid input")
         choice = menu()
     print("Thanks for your time")
 
+
 def menu():
-    print("To type a password press 1 \nTo verify password press 2 \nTo Quit the program press 'Q'")
+    print("To create new account press 1 \nTo verify password press 2 \nTo Quit the program press 'Q'")
     choice = input('>>> ')
     return choice
+
+
+def verify_user(entered_username):
+    with open('username.txt', 'r') as f:
+        username = f.read()
+    if username != entered_username:
+        print("Invalid Username")
+        return False
+    return True
 
 
 def generate_password():
@@ -96,31 +113,30 @@ def is_valid_password(password):
 
 
 def hash_value_generator(password):
-    # number = random.randint(1, 100000000000000)
-
-    salt = "123"
+    salt = str(random.randint(0, 99999999))
     with open('salt.txt', 'w') as f:
         f.write(salt)
     hash_password = password + salt
-    # password = "James12matt@"
 
     hash_value = hashlib.md5(hash_password.encode()).hexdigest()
-
-    print("Hash value:", hash_value)
     return hash_value
 
 
 def verify_password(password):
     with open('salt.txt', 'r') as f:
         salt = f.read()
-    password = password + salt
-    hash_value = hashlib.md5(password.encode()).hexdigest()
     with open('hashed_password.txt', 'r') as f:
         hash_password = f.read()
+    password = password + salt
+    hash_value = hashlib.md5(password.encode()).hexdigest()
+
     if hash_password == hash_value:
         print("Congrats, correct password")
+        return True
+
     else:
         print("Incorrect password")
+        return False
 
 
 main()
