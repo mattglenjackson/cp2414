@@ -96,7 +96,7 @@ def hash_value_generator(password):
     hash_password = password + salt
     # password = "James12matt@"
 
-    hash_value = hashlib.md5(password.encode()).hexdigest()
+    hash_value = hashlib.md5(hash_password.encode()).hexdigest()
 
     final_hash = hash_value
     return final_hash
