@@ -11,7 +11,7 @@ def main():
         #     password = generate_password()
         #     print(password)
 
-        if choice == 1:
+        if choice == "1":
             password = str(input("Enter password: "))
             is_valid_password(password)
             hash_value = hash_value_generator(password)
@@ -19,18 +19,18 @@ def main():
                 f.write(hash_value)
 
 
-        elif choice == 2:
+        elif choice == "2":
             password = str(input("Enter the password to verify: "))
             verify_password(password)
 
         else:
             print("Invalid input")
         choice = menu()
-
+    print("Thanks for your time")
 
 def menu():
-    print("To type a password press 1 \nTo verify password press 2")
-    choice = int(input('>>> '))
+    print("To type a password press 1 \nTo verify password press 2 \nTo Quit the program press 'Q'")
+    choice = input('>>> ')
     return choice
 
 
