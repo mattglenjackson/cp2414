@@ -13,22 +13,19 @@ def main():
 
         if choice == 1:
             password = str(input("Enter password: "))
-            while not is_valid_password(password):
-                password = str(input("Enter password: "))
-            menu()
+            is_valid_password(password)
+            hash_value = hash_value_generator(password)
+            with open('hashed_password.txt', 'w') as f:
+                f.write(hash_value)
+
 
         elif choice == 2:
-            password = str(input("Enter the password to verify"))
+            password = str(input("Enter the password to verify: "))
             verify_password(password)
-            menu()
 
         else:
             print("Invalid input")
-            menu()
-
-    hash_value = hash_value_generator(password)
-    with open('hashed_password.txt', 'w') as f:
-        f.write(hash_value)
+        choice = menu()
 
 
 def menu():
