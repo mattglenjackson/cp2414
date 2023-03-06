@@ -38,7 +38,7 @@ def main():
 
 def menu():
     print("To create new account press 1 \nTo verify password press 2 \nTo Quit the program press 'Q'")
-    choice = input('>>> ')
+    choice = input('>>> ').upper()
     return choice
 
 
