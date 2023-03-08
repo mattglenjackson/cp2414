@@ -35,10 +35,6 @@ def encrypt_pass(valid_password):
     return encrypted_pass
 
 
-def decrypt_pass():
-    pass
-
-
 def get_valid_username():
     username = input("Username: ")
     print(username)
@@ -92,9 +88,10 @@ def verify_account():
     while not is_valid:
         login_username = input("Username: ")
         login_password = input("Password: ")
+        verified_encryption = encrypt_pass(login_password)
         if login_username != saved_username:
             print("Invalid username!")
-        elif login_password != saved_password:
+        elif saved_password != verified_encryption:
             print("Invalid password!")
         else:
             is_valid = True
