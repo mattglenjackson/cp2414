@@ -1,4 +1,4 @@
-import re
+import rsa
 
 
 def main():
@@ -8,8 +8,9 @@ def main():
         if choice == "C":
             valid_username = get_valid_username()
             valid_password = get_valid_password()
-            caesar_cipher = encrypt_pass(valid_password)
-            save_to_file(valid_username, caesar_cipher)
+            (public_key, private_key) = generate_rsa_keys()
+            encrypted_pass = encrypt_pass(valid_password, public_key)
+            save_to_file(valid_username, encrypted_pass, private_key, public_key)
         elif choice == "L":
             verify_account()
 
@@ -21,17 +22,13 @@ def main():
     print("Thank you for using encryption mode! Have a good encrypted day!")
 
 
-def encrypt_pass(valid_password):
-    encryption = []
-    characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()<>?,./"
-    char_parts = [char for char in characters]
-    for char in valid_password:
-        char_index = int(char_parts.index(char.upper()))
-        if char_index > 52:
-            encryption.append(char_parts[char_parts.index(char.upper()) + 6])
-        else:
-            encryption.append(char_parts[(char_parts.index(char.upper()) + 6) - 52])
-    encrypted_pass = "".join(encryption)
+def generate_rsa_keys():
+    (public_key, private_key) = rsa.newkeys(512)
+    return public_key, private_key
+
+
+def encrypt_pass(valid_password, public_key):
+    encrypted_pass = rsa.encrypt(valid_password.encode(), public_key)
     return encrypted_pass
 
 
@@ -50,19 +47,19 @@ def get_valid_password():
             print("password length must be between 8 and 20 characters long")
             password = str(input("Password: "))
         # Check uppercase
-        if not re.search(r'[A-Z]', password):
+        if not any(c.isupper() for c in password):
             print("password must contain uppercase characters")
             password = str(input("Password: "))
         # Check lowercase
-        if not re.search(r'[a-z]', password):
+        if not any(c.islower() for c in password):
             print("password must contain lowercase characters")
             password = str(input("Password: "))
         # Check digit
-        if not re.search(r'\d', password):
+        if not any(c.isdigit() for c in password):
             print("password must contain at least one digit")
             password = str(input("Password: "))
         # Check symbol
-        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+        if not any(c in "!@#$%^&*(),.?\":{}|<>" for c in password):
             print("password must contain at least one symbol '!@#$%^&*(),.?' etc")
             password = str(input("Password: "))
         else:
@@ -70,28 +67,26 @@ def get_valid_password():
     return password
 
 
-def save_to_file(valid_username, encrypted_password):
-    with open('username_file.txt', 'w') as f:
-        f.write(valid_username)
-    with open('encrypted_password.txt', 'w') as f:
-        f.write(encrypted_password)
+def save_to_file(valid_username, encrypted_password, private_key, public_key):
+    with open(f'{valid_username}_private_key.txt', 'w') as f:
+        f.write(private_key.save_pkcs1().decode())
+    with open(f'{valid_username}_public_key.txt', 'w') as f:
+        f.write(public_key.save_pkcs1().decode())
+    with open(f'{valid_username}_encrypted_password.txt', 'w') as f:
+        f.write(str(encrypted_password))
     print("Account Created!")
     return valid_username, encrypted_password
 
 
 def verify_account():
-    with open('username_file.txt', 'r') as f:
-        saved_username = f.read()
-    with open('encrypted_password.txt', 'r') as f:
-        saved_password = f.read()
+    username = input("Username: ")
+    private_key = rsa.PrivateKey.load_pkcs1(open(f'{username}_private_key.txt', 'rb').read())
+    encrypted_password = open(f'{username}_encrypted_password.txt', 'r').read()
     is_valid = False
     while not is_valid:
-        login_username = input("Username: ")
         login_password = input("Password: ")
-        verified_encryption = encrypt_pass(login_password)
-        if login_username != saved_username:
-            print("Invalid username!")
-        elif saved_password != verified_encryption:
+        decrypted_password = rsa.decrypt(encrypted_password, private_key).decode()
+        if login_password != decrypted_password:
             print("Invalid password!")
         else:
             is_valid = True
